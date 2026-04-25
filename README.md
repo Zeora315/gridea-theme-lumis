@@ -1,6 +1,8 @@
 # Lumis - Gridea 博客主题
 
 一款现代化、简洁优雅的 Gridea 博客主题，支持丰富的自定义功能和响应式设计。
+<img width="1919" height="1024" alt="1" src="https://github.com/user-attachments/assets/a106a4f6-490f-493a-9082-528122e3bf57" />
+<img width="1919" height="1034" alt="2" src="https://github.com/user-attachments/assets/0cfcec2a-5c96-44ee-ab98-b12de229ae1e" />
 
 ## 主题特点
 

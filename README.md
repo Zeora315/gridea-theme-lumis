@@ -35,8 +35,8 @@ MIT License
 
 ## 致谢
 
-- 基于 [Breek](https://gr) 主题修改
-- 感谢 Gridea 静态博客工具
+- 基于 [Breek](https://github.com/lmm214/gridea-theme-breek/) 主题修改
+- 感谢 [Gridea](https://open.gridea.dev/) 静态博客工具
 
 ## 问题反馈
 

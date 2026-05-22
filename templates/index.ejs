@@ -13,12 +13,24 @@
         <div class="row">
           <div class="content-wrapper grid-posts content">
             
-            <!-- 新版Banner区域 -->
+            <!-- 新版 Banner 区域 -->
             <% if (site.customConfig.bannerEnable !== 'false') { %>
             <div class="new-banner-section">
               <div class="new-banner-bg">
-                <% if (site.customConfig.bannerBgImage) { %>
-                <img src="<%= site.customConfig.bannerBgImage %>" alt="Banner背景" class="new-banner-bg-img">
+                <% 
+                // 判断是否启用随机壁纸
+                var useRandom = site.customConfig.bannerUseRandom === 'true';
+                var categories = site.customConfig.bannerRandomCategories || 'landscape,anime,pc_wallpaper';
+                
+                if (useRandom) { 
+                  // 处理分类列表，生成 API URL
+                  var categoryList = categories.split(',').map(function(c) { return c.trim(); }).filter(function(c) { return c; });
+                  var randomApiUrl = 'https://api.uapis.cn/api/v1/random/image?category=' + categoryList.join(',');
+                %>
+                <div class="new-banner-bg-random" style="background-image: url('<%= randomApiUrl %>');"></div>
+                <div class="new-banner-bg-placeholder" style="display:none;"></div>
+                <% } else if (site.customConfig.bannerBgImage) { %>
+                <img src="<%= site.customConfig.bannerBgImage %>" alt="Banner 背景" class="new-banner-bg-img">
                 <% } else { %>
                 <div class="new-banner-bg-placeholder"></div>
                 <% } %>

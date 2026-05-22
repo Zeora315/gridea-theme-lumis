@@ -1,0 +1,15 @@
+<!-- Twikoo 评论系统 -->
+<div id="tcomment" class="twikoo-comments"></div>
+
+<script>
+  // 初始化 Twikoo 评论
+  if (typeof twikoo !== 'undefined') {
+    twikoo.init({
+      envId: '<%= site.customConfig.envId %>',
+      el: '#tcomment',
+      region: '<%= site.customConfig.region || "ap-guangzhou" %>',
+      path: window.location.pathname,
+      lang: '<%= site.customConfig.lang || "zh-CN" %>'
+    });
+  }
+</script>

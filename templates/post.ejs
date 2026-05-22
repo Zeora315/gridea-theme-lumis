@@ -431,16 +431,19 @@
 
               <div class="clear"></div>
               
-            <% if ( typeof commentSetting !== 'undefined' && commentSetting.showComment) { %>
+            <% if (site.customConfig.commentPlatform === 'twikoo' && site.customConfig.envId) { %>
               <div id="comments" class="bg-white hosted ">
-                <% if (commentSetting.commentPlatform === 'gitalk') { %>
-                  <%- include('./includes/gitalk') %>
-                <% } %>
-                <% if (commentSetting.commentPlatform === 'disqus') { %>
-                  <%- include('./includes/disqus') %>
-                <% } %>
+                <%- include('./includes/twikoo') %>
               </div>
-            <% } else if (site.customConfig.envId) { %>
+            <% } else if (site.customConfig.commentPlatform === 'gitalk' && commentSetting.gitalkSetting && commentSetting.gitalkSetting.clientId) { %>
+              <div id="comments" class="bg-white hosted ">
+                <%- include('./includes/gitalk') %>
+              </div>
+            <% } else if (site.customConfig.commentPlatform === 'disqus' && commentSetting.disqusSetting && commentSetting.disqusSetting.shortname) { %>
+              <div id="comments" class="bg-white hosted ">
+                <%- include('./includes/disqus') %>
+              </div>
+            <% } else if (site.customConfig.commentPlatform === 'valine' && site.customConfig.valineAppId && site.customConfig.valineAppKey) { %>
               <div id="comments" class="bg-white hosted ">
                 <%- include('./includes/valine') %>
               </div>

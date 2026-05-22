@@ -1,8 +1,8 @@
 {
-  "name": "Breek Pro",
+  "name": "lumis",
   "version": "1.3.6",
   "author": "Zeora",
-  "repository": "https://gridea.zeora.top/",
+  "repository": "https://github.com/Zeora315/gridea-theme-lumis",
   "customConfig": [
     {
       "name": "jsdelivr",
@@ -370,12 +370,114 @@
       "note": "最多配置8个社交图标，留空则不显示"
     },
     {
+      "name": "commentPlatform",
+      "label": "评论平台",
+      "group": "评论配置",
+      "value": "",
+      "type": "select",
+      "options": [
+        {"label": "不开启评论", "value": ""},
+        {"label": "Twikoo", "value": "twikoo"},
+        {"label": "Gitalk", "value": "gitalk"},
+        {"label": "Disqus", "value": "disqus"},
+        {"label": "Valine", "value": "valine"}
+      ],
+      "note": "请选择要使用的评论平台，Gitalk 和 Disqus 配置请在 Gridea 客户端评论设置中配置"
+    },
+    {
       "name": "envId",
       "label": "环境 ID",
       "group": "Twikoo 评论配置",
       "value": "",
       "type": "input",
       "note": "腾讯云云开发环境 ID 或 Vercel 部署地址"
+    },
+    {
+      "name": "valineAppId",
+      "label": "App ID",
+      "group": "Valine 评论配置",
+      "value": "",
+      "type": "input",
+      "note": "LeanCloud 应用的 App ID"
+    },
+    {
+      "name": "valineAppKey",
+      "label": "App Key",
+      "group": "Valine 评论配置",
+      "value": "",
+      "type": "input",
+      "note": "LeanCloud 应用的 App Key"
+    },
+    {
+      "name": "valinePlaceholder",
+      "label": "占位符",
+      "group": "Valine 评论配置",
+      "value": "说点什么吧...",
+      "type": "input",
+      "note": "评论框占位提示文字"
+    },
+    {
+      "name": "valineAvatar",
+      "label": "头像模式",
+      "group": "Valine 评论配置",
+      "value": "mp",
+      "type": "select",
+      "options": [
+        {"label": "神秘人", "value": "mp"},
+        {"label": "Gravatar", "value": "identicon"},
+        {"label": "Monster", "value": "monsterid"},
+        {"label": "Wavatar", "value": "wavatar"},
+        {"label": "Retro", "value": "retro"},
+        {"label": "Robohash", "value": "robohash"},
+        {"label": "Hide", "value": "hide"}
+      ],
+      "note": "评论者头像样式"
+    },
+    {
+      "name": "valinePageSize",
+      "label": "每页评论数",
+      "group": "Valine 评论配置",
+      "value": "10",
+      "type": "input",
+      "note": "每页显示的评论数量"
+    },
+    {
+      "name": "valineLang",
+      "label": "语言",
+      "group": "Valine 评论配置",
+      "value": "zh-CN",
+      "type": "select",
+      "options": [
+        {"label": "简体中文", "value": "zh-CN"},
+        {"label": "繁体中文", "value": "zh-TW"},
+        {"label": "English", "value": "en"},
+        {"label": "日本語", "value": "ja"}
+      ],
+      "note": "评论界面语言"
+    },
+    {
+      "name": "valineRecordIP",
+      "label": "记录 IP",
+      "group": "Valine 评论配置",
+      "value": "false",
+      "type": "select",
+      "options": [
+        {"label": "开启", "value": true},
+        {"label": "关闭", "value": false}
+      ],
+      "note": "是否记录评论者 IP"
+    },
+    {
+      "name": "valineEnableQQ",
+      "label": "QQ 头像",
+      "group": "Valine 评论配置",
+      "value": "false",
+      "type": "select",
+      "options": [
+        {"label": "开启", "value": true},
+        {"label": "关闭", "value": false}
+      ],
+      "note": "是否启用 QQ 头像"
     },
     {
       "name": "aiSummaryName",
@@ -392,22 +494,6 @@
       "value": "",
       "type": "input",
       "note": "点击文章摘要旁小箭头跳转的链接，如：https://chatgpt.com/"
-    },
-    {
-      "name": "welcomeTitle",
-      "label": "欢迎标题",
-      "group": "首页欢迎区域",
-      "value": "Welcome to my blog!",
-      "type": "input",
-      "note": "首页欢迎区域的大标题"
-    },
-    {
-      "name": "welcomeSubtitle",
-      "label": "欢迎副标题",
-      "group": "首页欢迎区域",
-      "value": "如果你执意追逐我的幻影，迟早会被真正的我打败。",
-      "type": "input",
-      "note": "首页欢迎区域的副标题/描述文字"
     },
     {
       "name": "bannerPosts",
@@ -839,32 +925,52 @@
     },
     {
       "name": "bannerBgImage",
-      "label": "Banner背景图",
-      "group": "首页Banner",
+      "label": "Banner 背景图",
+      "group": "首页 Banner",
       "value": "",
       "type": "picture-upload",
-      "note": "建议使用宽度大于1920px的高清图片，全屏显示"
+      "note": "建议使用宽度大于 1920px 的高清图片，全屏显示。如果设置了随机壁纸，此项将被忽略"
+    },
+    {
+      "name": "bannerUseRandom",
+      "label": "启用随机壁纸",
+      "group": "首页 Banner",
+      "value": "false",
+      "type": "select",
+      "options": [
+        {"label": "开启", "value": "true"},
+        {"label": "关闭", "value": "false"}
+      ],
+      "note": "开启后使用 UAPI 随机壁纸作为 Banner 背景，支持多分类选择"
+    },
+    {
+      "name": "bannerRandomCategories",
+      "label": "随机壁纸分类",
+      "group": "首页 Banner",
+      "value": "landscape,anime,pc_wallpaper",
+      "type": "input",
+      "note": "多个分类用逗号分隔，支持：landscape（风景）、anime（混合动漫）、pc_wallpaper（电脑壁纸）、mobile_wallpaper（手机壁纸）、ai_drawing（AI 绘画）、acg（二次元）、bq（表情包）、furry（福瑞）"
     },
     {
       "name": "bannerTitle",
-      "label": "Banner主标题",
-      "group": "首页Banner",
+      "label": "Banner 主标题",
+      "group": "首页 Banner",
       "value": "欢迎来到我的小站",
       "type": "input",
-      "note": "Banner区域显示的主标题"
+      "note": "Banner 区域显示的主标题"
     },
     {
       "name": "bannerSubtitle",
-      "label": "Banner副标题",
-      "group": "首页Banner",
+      "label": "Banner 副标题",
+      "group": "首页 Banner",
       "value": "👋 你好，欢迎来到我的小站",
       "type": "input",
       "note": "显示在主标题上方的副标题"
     },
     {
       "name": "bannerEnable",
-      "label": "启用Banner区域",
-      "group": "首页Banner",
+      "label": "启用 Banner 区域",
+      "group": "首页 Banner",
       "value": "true",
       "type": "select",
       "options": [

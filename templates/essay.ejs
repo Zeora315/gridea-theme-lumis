@@ -2,6 +2,270 @@
 <html>
   <head>
     <%- include('./includes/head', { siteTitle: `${site.customConfig.essayTitle || '即刻说说'} | ${themeConfig.siteName}` }) %>
+    <style>
+      /* 即刻说说页面样式 */
+      .essay-page-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      
+      /* 瀑布流布局 */
+      .essay-masonry {
+        column-count: 3;
+        column-gap: 20px;
+      }
+      
+      @media (max-width: 1024px) {
+        .essay-masonry {
+          column-count: 2;
+        }
+      }
+      
+      @media (max-width: 768px) {
+        .essay-masonry {
+          column-count: 1;
+        }
+      }
+      
+      /* 说说卡片 */
+      .essay-card {
+        break-inside: avoid;
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      .essay-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      }
+      
+      /* 卡片头部 */
+      .essay-card-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      
+      .essay-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 12px;
+      }
+      
+      .essay-user-info {
+        flex: 1;
+      }
+      
+      .essay-username {
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      
+      .essay-verified {
+        width: 14px;
+        height: 14px;
+        fill: #1DA1F2;
+      }
+      
+      .essay-time {
+        font-size: 12px;
+        color: #999;
+        margin-top: 2px;
+      }
+      
+      /* 说说内容 */
+      .essay-card-content {
+        font-size: 14px;
+        line-height: 1.6;
+        color: #333;
+        margin-bottom: 12px;
+        word-break: break-word;
+      }
+      
+      /* 图片网格 */
+      .essay-images-grid {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 12px;
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .essay-images-grid.single {
+        grid-template-columns: 1fr;
+      }
+      
+      .essay-images-grid.double {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .essay-images-grid.triple {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .essay-images-grid.quad {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .essay-images-grid.multi {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      
+      .essay-images-grid img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        cursor: pointer;
+        transition: opacity 0.3s ease;
+      }
+      
+      .essay-images-grid img:hover {
+        opacity: 0.9;
+      }
+      
+      /* 卡片底部操作栏 */
+      .essay-card-actions {
+        display: flex;
+        justify-content: space-around;
+        padding-top: 12px;
+        border-top: 1px solid #f0f0f0;
+      }
+      
+      .essay-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        border: none;
+        background: none;
+        color: #666;
+        font-size: 13px;
+        cursor: pointer;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+      }
+      
+      .essay-action-btn:hover {
+        background: #f5f5f5;
+        color: #1DA1F2;
+      }
+      
+      .essay-action-btn svg {
+        width: 16px;
+        height: 16px;
+        fill: currentColor;
+      }
+      
+      /* 地址信息 */
+      .essay-location {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: #999;
+        margin-top: 8px;
+      }
+      
+      .essay-location svg {
+        width: 12px;
+        height: 12px;
+        fill: #999;
+      }
+      
+      /* 评论弹窗 */
+      .essay-comment-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 10000;
+        justify-content: center;
+        align-items: center;
+      }
+      
+      .essay-comment-modal.active {
+        display: flex;
+      }
+      
+      .essay-comment-box {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+      
+      .essay-comment-quote {
+        background: #f5f5f5;
+        border-left: 3px solid #1DA1F2;
+        padding: 12px;
+        margin-bottom: 16px;
+        border-radius: 4px;
+        font-size: 13px;
+        color: #666;
+      }
+      
+      .essay-comment-textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        resize: vertical;
+        margin-bottom: 12px;
+      }
+      
+      .essay-comment-textarea:focus {
+        outline: none;
+        border-color: #1DA1F2;
+      }
+      
+      .essay-comment-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+      }
+      
+      .essay-comment-btn {
+        padding: 8px 20px;
+        border: none;
+        border-radius: 20px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .essay-comment-btn.cancel {
+        background: #f5f5f5;
+        color: #666;
+      }
+      
+      .essay-comment-btn.submit {
+        background: #1DA1F2;
+        color: #fff;
+      }
+      
+      .essay-comment-btn.submit:hover {
+        background: #0d8bd9;
+      }
+    </style>
   </head>
   <body>
     <!-- start: #wrapper -->
@@ -9,129 +273,103 @@
       
       <%- include('./includes/header') %>
 
-      <!-- 顶部背景区域 - 放在容器外，与文章页一致 -->
-      <div class="essay-header" style="background-image: url('<%= site.customConfig.essayBackground || site.customConfig.featureImage %>');">
-        <div class="essay-header-content">
-          <h1 class="essay-title"><%= site.customConfig.essayTitle || '即刻短文' %></h1>
-          <% if (site.customConfig.essaySubtitle) { %>
-          <div class="essay-subtitle"><%= site.customConfig.essaySubtitle %></div>
-          <% } %>
-          <% if (site.customConfig.essayButtonText && site.customConfig.essayButtonLink) { %>
-          <a href="<%= site.customConfig.essayButtonLink %>" class="essay-header-btn">
-            <%= site.customConfig.essayButtonText %>
-            <i class="fas fa-arrow-right"></i>
-          </a>
-          <% } %>
-        </div>
-      </div>
-
       <main id="essay" class="main fullcover no-sidebar content">
-        <div class="grid-container module-wrapper">
-          <div class="epcl-page-wrapper">
-            <div class="essay-container">
-              <!-- 说说列表 -->
-              <div class="essay-list">
-                <% 
-                var essays = site.customConfig.essays || [];
-                var limit = parseInt(site.customConfig.essayLimit) || 30;
-                var displayEssays = essays.slice(0, limit);
-                
-                displayEssays.forEach(function(item) { 
-                  // 处理图片
-                  var images = [];
-                  if (item.images) {
-                    if (typeof item.images === 'string') {
-                      images = item.images.split('\n').filter(function(img) { return img.trim() !== ''; });
-                    } else if (Array.isArray(item.images)) {
-                      images = item.images;
-                    }
-                  }
-                  
-                  // 处理视频
-                  var videos = [];
-                  if (item.videos) {
-                    if (typeof item.videos === 'string') {
-                      videos = item.videos.split('\n').filter(function(vid) { return vid.trim() !== ''; });
-                    } else if (Array.isArray(item.videos)) {
-                      videos = item.videos;
-                    }
-                  }
-                %>
-                <div class="essay-item">
-                  <div class="essay-content">
-                    <div class="essay-text"><%= item.content %></div>
-                    
-                    <!-- 图片 -->
-                    <% if (images.length > 0) { %>
-                    <div class="essay-images">
-                      <% images.forEach(function(img) { %>
-                        <img src="<%= img.trim() %>" alt="" class="essay-image">
-                      <% }); %>
-                    </div>
-                    <% } %>
-                    
-                    <!-- 视频 -->
-                    <% if (videos.length > 0) { %>
-                    <div class="essay-videos">
-                      <% videos.forEach(function(video) { %>
-                        <% if (video.indexOf('player.bilibili.com') !== -1) { %>
-                          <iframe src="<%= video.trim() %>" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="essay-video"></iframe>
-                        <% } else { %>
-                          <video src="<%= video.trim() %>" controls class="essay-video"></video>
-                        <% } %>
-                      <% }); %>
-                    </div>
-                    <% } %>
-                    
-                    <!-- 音乐 -->
-                    <% if (item.aplayer) { %>
-                    <div class="essay-music" data-server="<%= item.aplayer.server %>" data-id="<%= item.aplayer.id %>">
-                      <i class="fas fa-music"></i>
-                      <span>音乐</span>
-                    </div>
-                    <% } %>
-                    
-                    <!-- 链接 -->
-                    <% if (item.link) { %>
-                    <a href="<%= item.link %>" class="essay-link" target="_blank">
-                      <i class="fas fa-link"></i>
-                      <span>查看详情</span>
-                    </a>
-                    <% } %>
-                  </div>
-                  
-                  <div class="essay-meta">
-                    <span class="essay-date">
-                      <i class="far fa-clock"></i>
-                      <%= item.date %>
-                    </span>
-                    <% if (item.address) { %>
-                    <span class="essay-address">
-                      <i class="fas fa-map-marker-alt"></i>
-                      <%= item.address %>
-                    </span>
-                    <% } %>
-                    <% if (item.from) { %>
-                    <span class="essay-from">
-                      <i class="fas fa-user"></i>
-                      <%= item.from %>
-                    </span>
-                    <% } %>
-                  </div>
-                </div>
+        <div class="essay-page-wrapper">
+          <!-- 说说瀑布流列表 -->
+          <div class="essay-masonry">
+            <% 
+            var essays = site.customConfig.essays || [];
+            var limit = parseInt(site.customConfig.essayLimit) || 30;
+            var displayEssays = essays.slice(0, limit);
+            var avatarUrl = site.customConfig.essayAvatar || site.customConfig.headerLogo || '/media/images/gridea.png';
+            var username = site.customConfig.essayUsername || site.title || '用户';
+            
+            displayEssays.forEach(function(item, index) { 
+               // 处理图片
+               var images = [];
+               if (item.images) {
+                 if (typeof item.images === 'string') {
+                   images = item.images.split('\n').filter(function(img) { return img.trim() !== ''; });
+                 } else if (Array.isArray(item.images)) {
+                   images = item.images;
+                 }
+               }
+               
+               // 判断图片网格样式
+               var imageGridClass = '';
+               if (images.length === 1) {
+                 imageGridClass = 'single';
+               } else if (images.length === 2) {
+                 imageGridClass = 'double';
+               } else if (images.length === 3) {
+                 imageGridClass = 'triple';
+               } else if (images.length === 4) {
+                 imageGridClass = 'quad';
+               } else if (images.length > 4) {
+                 imageGridClass = 'multi';
+               }
+             %>
+             <div class="essay-card" data-index="<%= index %>">
+               <!-- 卡片头部 -->
+               <div class="essay-card-header">
+                 <img src="<%= site.customConfig.headerLogo || '/media/images/gridea.png' %>" alt="头像" class="essay-avatar">
+                 <div class="essay-user-info">
+                   <div class="essay-username">
+                     <%= site.title || '张明寺' %>
+                     <svg class="essay-verified" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                   </div>
+                   <div class="essay-time"><%= item.date %></div>
+                 </div>
+               </div>
+              
+              <!-- 说说内容 -->
+              <div class="essay-card-content"><%= item.content %></div>
+              
+              <!-- 图片网格 -->
+              <% if (images.length > 0) { %>
+              <div class="essay-images-grid <%= imageGridClass %>">
+                <% images.forEach(function(img) { %>
+                  <img src="<%= img.trim() %>" alt="" onclick="window.open(this.src, '_blank')">
                 <% }); %>
               </div>
+              <% } %>
               
-              <!-- 加载更多 -->
-              <% if (essays.length > limit) { %>
-              <div class="essay-load-more">
-                <button class="load-more-btn" id="loadMoreEssay">加载更多</button>
+              <!-- 地址信息 -->
+              <% if (item.address) { %>
+              <div class="essay-location">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                <span><%= item.address %></span>
               </div>
               <% } %>
+              
+              <!-- 卡片底部操作栏 -->
+              <div class="essay-card-actions">
+                <button class="essay-action-btn" onclick="openEssayComment(<%= index %>)">
+                  <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  <span>评论</span>
+                </button>
+                <button class="essay-action-btn" onclick="shareEssay(<%= index %>)">
+                  <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                  <span>转发</span>
+                </button>
+              </div>
             </div>
+            <% }); %>
           </div>
         </div>
       </main>
+      
+      <!-- 评论弹窗 -->
+      <div class="essay-comment-modal" id="essayCommentModal">
+        <div class="essay-comment-box">
+          <div class="essay-comment-quote" id="essayCommentQuote"></div>
+          <textarea class="essay-comment-textarea" id="essayCommentTextarea" placeholder="写下你的评论..."></textarea>
+          <div class="essay-comment-actions">
+            <button class="essay-comment-btn cancel" onclick="closeEssayComment()">取消</button>
+            <button class="essay-comment-btn submit" onclick="submitEssayComment()">发布</button>
+          </div>
+        </div>
+      </div>
       
       <%- include('./includes/footer') %>
       
@@ -139,14 +377,68 @@
     <!-- end: #wrapper -->
     
     <script>
-      // 简单的加载更多功能
-      document.addEventListener('DOMContentLoaded', function() {
-        var loadMoreBtn = document.getElementById('loadMoreEssay');
-        if (loadMoreBtn) {
-          loadMoreBtn.addEventListener('click', function() {
-            // 这里可以实现加载更多逻辑
-            alert('更多内容加载功能需要配合后端实现');
+      // 评论功能
+      var currentEssayIndex = -1;
+      var essays = <%- JSON.stringify(site.customConfig.essays || []) %>;
+      
+      function openEssayComment(index) {
+        currentEssayIndex = index;
+        var essay = essays[index];
+        var modal = document.getElementById('essayCommentModal');
+        var quote = document.getElementById('essayCommentQuote');
+        var textarea = document.getElementById('essayCommentTextarea');
+        
+        quote.textContent = essay.content;
+        textarea.value = '';
+        modal.classList.add('active');
+      }
+      
+      function closeEssayComment() {
+        var modal = document.getElementById('essayCommentModal');
+        modal.classList.remove('active');
+        currentEssayIndex = -1;
+      }
+      
+      function submitEssayComment() {
+         var textarea = document.getElementById('essayCommentTextarea');
+         var comment = textarea.value.trim();
+         
+         if (!comment) {
+           alert('请输入评论内容');
+           return;
+         }
+         
+         // 直接跳转到专门的说说评论页面
+         var essay = essays[currentEssayIndex];
+         var commentContent = '引用说说：' + essay.content + '\\n\\n' + comment;
+         
+         // 跳转到专门的评论页面
+         window.location.href = '/essay-comments.html?content=' + encodeURIComponent(commentContent);
+         closeEssayComment();
+       }
+      
+      function shareEssay(index) {
+        var essay = essays[index];
+        var shareText = essay.content;
+        
+        if (navigator.share) {
+          navigator.share({
+            title: '即刻说说',
+            text: shareText,
+            url: window.location.href
           });
+        } else {
+          // 复制到剪贴板
+          navigator.clipboard.writeText(shareText + '\n' + window.location.href).then(function() {
+            alert('已复制到剪贴板');
+          });
+        }
+      }
+      
+      // 点击弹窗外部关闭
+      document.getElementById('essayCommentModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeEssayComment();
         }
       });
     </script>

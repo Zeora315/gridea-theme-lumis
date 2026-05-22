@@ -1,5 +1,5 @@
       <style>
-      /* 胶囊滑块 Tabbar 样式 */
+      /* 胶囊 */
       
       /* 全局隐藏原始菜单元素 */
       .header-brand,
@@ -10,7 +10,6 @@
         display: none !important;
       }
       
-      /* 确保 modern-header 默认隐藏，在媒体查询中显示 */
       .modern-header {
         display: none !important;
       }
@@ -43,7 +42,7 @@
           display: none !important;
         }
         
-        /* 胶囊滑块 Tabbar 容器 */
+        /* 胶囊容器 */
         .capsule-tabbar {
           position: relative;
           display: flex;
@@ -111,7 +110,7 @@
             transform: translateY(-1px);
         }
         
-        /* 搜索按钮样式 - 与菜单项一致 */
+        /* 搜索按钮样式 */
         .capsule-search-btn {
           position: relative;
           z-index: 2;
@@ -152,7 +151,7 @@
         }
       }
       
-      /* ========== 平板端（769px - 1024px）使用桌面端菜单 ========== */
+      /* ========== 平板端（769px - 1024px）菜单 ========== */
       @media screen and (min-width: 769px) and (max-width: 1024px) {
         .modern-header {
           display: block !important;
@@ -161,16 +160,18 @@
           left: 50% !important;
           transform: translateX(-50%) !important;
           z-index: 9999 !important;
-          width: auto !important;
-          max-width: calc(100% - 64px) !important;
+          width: 100% !important;
+          max-width: 100% !important;
           text-align: center !important;
+          padding: 0 16px !important;
+          box-sizing: border-box !important;
         }
         
         .mobile-bottom-nav {
           display: none !important;
         }
         
-        /* 胶囊滑块 Tabbar 容器 */
+        /* 胶囊容器 */
         .capsule-tabbar {
           position: relative;
           display: flex;
@@ -238,7 +239,7 @@
             transform: translateY(-1px);
         }
         
-        /* 搜索按钮样式 - 与菜单项一致 */
+        /* 搜索按钮样式 */
         .capsule-search-btn {
           position: relative;
           z-index: 2;
@@ -438,7 +439,7 @@
       }
       </style>
 
-      <!-- 桌面端胶囊滑块导航栏 -->
+      <!-- 桌面导航栏 -->
       <header id="header" class="modern-header">
         <div class="capsule-tabbar" id="capsuleTabbar">
           <div class="capsule-pill" id="capsulePill"></div>
@@ -502,7 +503,7 @@
       </nav>
 
       <script>
-      // 胶囊滑块 Tabbar 交互逻辑
+      // 胶囊交互逻辑
       function initCapsuleSliders() {
         // 桌面端胶囊滑块
         const capsuleTabs = document.querySelectorAll('.capsule-tab');

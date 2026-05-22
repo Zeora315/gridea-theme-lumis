@@ -20,6 +20,127 @@
     font-family: 'FontAwesome' !important;
   }
   
+  /* 图片查看器样式 */
+  .image-viewer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 10000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  
+  .image-viewer-overlay.active {
+    display: flex;
+    opacity: 1;
+  }
+  
+  .image-viewer-container {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .image-viewer-img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    cursor: zoom-in;
+    transition: transform 0.3s ease;
+  }
+  
+  .image-viewer-img.zoomed {
+    cursor: zoom-out;
+    transform: scale(1.5);
+  }
+  
+  .image-viewer-close {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+  }
+  
+  .image-viewer-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .image-viewer-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s ease;
+  }
+  
+  .image-viewer-nav:hover {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .image-viewer-prev {
+    left: 20px;
+  }
+  
+  .image-viewer-next {
+    right: 20px;
+  }
+  
+  .image-viewer-info {
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* 为所有图片添加点击效果 */
+  .post-content img,
+  .essay-images-grid img,
+  .post-card img,
+  .banner-section img {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  
+  .post-content img:hover,
+  .essay-images-grid img:hover,
+  .post-card img:hover,
+  .banner-section img:hover {
+    transform: scale(1.02);
+  }
+  
   /* 新版Banner区域样式 - 无留白全屏 */
   .new-banner-section {
     position: relative;
@@ -51,6 +172,14 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+  }
+  
+  .new-banner-bg-random {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
   
   .new-banner-bg-placeholder {
@@ -199,6 +328,17 @@
   }
 </style>
 
+<!-- 图片查看器 HTML 结构 -->
+<div class="image-viewer-overlay" id="imageViewer">
+  <button class="image-viewer-close" onclick="closeImageViewer()">×</button>
+  <button class="image-viewer-nav image-viewer-prev" onclick="prevImage()">‹</button>
+  <div class="image-viewer-container">
+    <img class="image-viewer-img" id="viewerImage" src="" alt="">
+  </div>
+  <button class="image-viewer-nav image-viewer-next" onclick="nextImage()">›</button>
+  <div class="image-viewer-info" id="imageInfo"></div>
+</div>
+
 <script src="<%= themeConfig.domain %>/media/js/jquery.min.js"></script>
 <script src="<%= themeConfig.domain %>/media/js/masonry.pkgd.min.js"></script>
 <script src="<%= themeConfig.domain %>/media/js/aos.js"></script>
@@ -207,6 +347,127 @@
 <script src="<%= themeConfig.domain %>/media/js/jquery.magnific-popup.min.js"></script>
 <script src="<%= themeConfig.domain %>/media/js/functions.js"></script>
 <script>
+  // 图片查看器功能
+  let currentImageIndex = 0;
+  let imageList = [];
+  let currentImageGroup = [];
+  
+  // 初始化图片查看器
+  function initImageViewer() {
+    // 收集页面中所有图片
+    imageList = Array.from(document.querySelectorAll('img[src]:not(.essay-avatar):not(.header-logo)')).filter(img => {
+      return img.src && !img.src.includes('data:image') && img.width > 50 && img.height > 50;
+    });
+    
+    // 为所有图片添加点击事件
+    imageList.forEach((img, index) => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', () => openImageViewer(index));
+    });
+  }
+  
+  // 打开图片查看器
+  function openImageViewer(index, group = null) {
+    if (group) {
+      currentImageGroup = group;
+      currentImageIndex = group.indexOf(imageList[index]);
+    } else {
+      currentImageGroup = imageList;
+      currentImageIndex = index;
+    }
+    
+    const image = currentImageGroup[currentImageIndex];
+    const viewer = document.getElementById('imageViewer');
+    const viewerImage = document.getElementById('viewerImage');
+    const imageInfo = document.getElementById('imageInfo');
+    
+    viewerImage.src = image.src;
+    viewerImage.alt = image.alt || '图片';
+    viewerImage.classList.remove('zoomed');
+    
+    // 显示图片信息
+    imageInfo.textContent = `${currentImageIndex + 1} / ${currentImageGroup.length}`;
+    
+    viewer.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // 添加键盘事件
+    document.addEventListener('keydown', handleKeydown);
+  }
+  
+  // 关闭图片查看器
+  function closeImageViewer() {
+    const viewer = document.getElementById('imageViewer');
+    viewer.classList.remove('active');
+    document.body.style.overflow = '';
+    document.removeEventListener('keydown', handleKeydown);
+  }
+  
+  // 上一张图片
+  function prevImage() {
+    if (currentImageGroup.length <= 1) return;
+    currentImageIndex = (currentImageIndex - 1 + currentImageGroup.length) % currentImageGroup.length;
+    updateImageViewer();
+  }
+  
+  // 下一张图片
+  function nextImage() {
+    if (currentImageGroup.length <= 1) return;
+    currentImageIndex = (currentImageIndex + 1) % currentImageGroup.length;
+    updateImageViewer();
+  }
+  
+  // 更新图片查看器
+  function updateImageViewer() {
+    const image = currentImageGroup[currentImageIndex];
+    const viewerImage = document.getElementById('viewerImage');
+    const imageInfo = document.getElementById('imageInfo');
+    
+    viewerImage.src = image.src;
+    viewerImage.alt = image.alt || '图片';
+    viewerImage.classList.remove('zoomed');
+    
+    imageInfo.textContent = `${currentImageIndex + 1} / ${currentImageGroup.length}`;
+  }
+  
+  // 键盘事件处理
+  function handleKeydown(e) {
+    switch(e.key) {
+      case 'Escape':
+        closeImageViewer();
+        break;
+      case 'ArrowLeft':
+        prevImage();
+        break;
+      case 'ArrowRight':
+        nextImage();
+        break;
+      case ' ':
+        e.preventDefault();
+        toggleZoom();
+        break;
+    }
+  }
+  
+  // 切换缩放
+  function toggleZoom() {
+    const viewerImage = document.getElementById('viewerImage');
+    viewerImage.classList.toggle('zoomed');
+  }
+  
+  // 图片点击缩放
+  document.getElementById('viewerImage')?.addEventListener('click', toggleZoom);
+  
+  // 点击遮罩层关闭
+  document.getElementById('imageViewer')?.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) {
+      closeImageViewer();
+    }
+  });
+  
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', initImageViewer);
+  
   // 所有文章数据（排除隐藏文章）
   window.allPosts = [
     <% site.posts.forEach(function(post, index) { %>
